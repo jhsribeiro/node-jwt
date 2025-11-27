@@ -37,6 +37,33 @@ app.post('/login', (req, res) => {
     res.json({ mensagem: 'Login bem-sucedido', token: token });
 });
 
+// Middleware para verificar o JWT
+function verificaJWT(req, res, next) {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+        return res.status(401).json({ mensagem: 'Token de autenticação não fornecido.' });
+    }
+
+    // O token vem no formato "Bearer <token>"
+    const token = authHeader.split(' ')[1]; //dividindo a string em 2, baseado no " ", e pegando apenas a posição 1
+
+    // Verifica se o token é válido
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+        if (err) {
+            // Se o erro for de expiração, a mensagem é mais específica
+            if (err.name === 'TokenExpiredError') {
+                return res.status(401).json({ mensagem: 'Token expirado.' });
+            }
+            return res.status(401).json({ mensagem: 'Token inválido.' });
+        }
+
+        // Se o token for válido, os dados decodificados são adicionados à requisição para uso posterior.
+        req.usuarioLogado = decoded;
+        next(); // Permite que a requisição prossiga para a rota
+    });
+}
+
 
 // SERVIDOR
 app.listen(PORT, () => {
