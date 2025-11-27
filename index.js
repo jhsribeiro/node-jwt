@@ -4,7 +4,9 @@ const jwt = require('jsonwebtoken');
 const app = express();
 const PORT = 3000;
 
-const JWT_SECRET = 'banana';
+// Chave secreta para assinar o JWT. 
+// Em um projeto real, isso DEVE estar em uma variável de ambiente (.env)!
+const JWT_SECRET = 'sua_senha_aqui';
 
 app.use(express.json());
 
