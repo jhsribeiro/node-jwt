@@ -64,6 +64,28 @@ function verificaJWT(req, res, next) {
     });
 }
 
+// DEMAIS ROTAS
+
+// Rota PÚBLICA, acessível por qualquer um
+app.get('/', (req, res) => {
+    res.json({ mensagem: 'Bem-vindo à nossa API pública!' });
+});
+
+// Rota PROTEGIDA, só pode ser acessada com um token JWT válido
+// Note como passamos o middleware `verificaJWT` antes da função da rota.
+app.get('/alunos', verificaJWT, (req, res) => {
+    // Graças ao middleware, temos acesso a req.usuarioLogado
+    console.log('Acessado por:', req.usuarioLogado);
+
+    res.json({
+        mensagem: `Acesso permitido para o usuário: ${req.usuarioLogado.usuario}.`,
+        alunos: [
+            { id: 1, nome: 'João' },
+            { id: 2, nome: 'Maria' }
+        ]
+    });
+});
+
 
 // SERVIDOR
 app.listen(PORT, () => {
